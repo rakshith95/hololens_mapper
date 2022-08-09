@@ -105,7 +105,7 @@ This node creates HLOC map out of the images and COLMAP SfM.
             if chunk.node.imageFolderNames and chunk.node.imageFolderNames.value != '':
                 with open(chunk.node.imageFolderNames.value, "r") as f:
                     img_folders = f.read().splitlines()
-                holo_io.copy_all_images(chunk.node.imageDirectory.value, out_dir, imgs_dir_list=img_folders)
+                holo_io.copy_all_images(chunk.node.imageDirectory.value, out_dir)
             else:
                 holo_io.copy_all_images(chunk.node.imageDirectory.value, out_dir)
             copy2(chunk.node.inputSfM.value + '/cameras.txt', out_dir)
