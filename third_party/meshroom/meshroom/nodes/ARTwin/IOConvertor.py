@@ -70,6 +70,14 @@ different format.
             value='',
             uid=[0],
         ),
+        desc.File(
+            name='PosesFile',
+            label='SLAM poses file',
+            description='''
+            A JSON file with the poses with timestamps from a SLAM method you want to align your model to ''',
+            value='',
+            uid=[0],
+        ),  
         desc.IntParam(
             name='hashScale', 
             label='Points hash scale', 
@@ -122,7 +130,7 @@ different format.
             label='Input format',
             description='The input data format, e.g., COLMAP or HoloLens recording.',
             value='HoloLens',
-            values=['COLMAP', 'HoloLens', 'HoloLens2'],   # , 'Meshroom'
+            values=['COLMAP', 'HoloLens', 'HoloLens2', 'ORB-SLAM'],   # , 'Meshroom'
             exclusive=True,
             uid=[0],
         ),
@@ -261,6 +269,20 @@ different format.
             if chunk.node.inputSfMFormat.value == 'COLMAP':
                 cameras, images, points3D = colmap_io.load_model(chunk.node.inputFolder.value)
 
+            # ADD FOR CONVERSION FROM ORB SLAM
+            if chunk.node.inputsFMFormat.value == "ORB-SLAM":
+                pose_file = None
+                if not chunk.node.PosesFile:
+                    chunk.logger.error("Please enter path of pose file. Does not work without it")
+                else:
+                    chunk.logger.info("Pose file found and fully loaded")
+                    pose_file = chunk.node.PosesFile
+                cameras = {}
+                points3D = []
+                utils_math = UtilsMath()
+                images_list = []
+
+                # cameras, images, points3D = 
 
             # update the pointcloud and the observations 
             if chunk.node.pointcloudFile.value:

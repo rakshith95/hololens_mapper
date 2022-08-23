@@ -32,7 +32,7 @@ class UtilsContainers:
         if self._container_type == "docker":
             command_line = f"docker run --rm --gpus all -v {self._working_dir}:/data {self._image} {self._lib_prefix}{command}"    # 
         if self._container_type == "singularity":
-            command_line = f"singularity exec --nv -B {self._working_dir}:/data {self._image} {self._lib_prefix}{command}"
+            command_line = f"singularity exec --nv -B {self._working_dir}:/data -B /home/rakshith/CTU/ARI/SPRING/hololens_mapper/third_party/Hierarchical-Localization/:/app {self._image} {self._lib_prefix}{command}"
 
         if self._logger:
             self._logger.info("Run: " + command_line)
