@@ -86,6 +86,7 @@ class ColmapIO:
             if first_row:
                 if float(p[1]) == 1 and float(p[2]) == 0 and float(p[3]) == 0 and float(p[4]) == 0 \
                     and float(p[5]) == 0 and float(p[6]) == 0 and float(p[7]) == 0:
+                    first_row = False
                     continue
                 R = utils_math.q2r([float(p[1]), float(p[2]), float(p[3]), float(p[4])])
                 C = - np.matrix(R).T * np.matrix([float(p[5]), float(p[6]), float(p[7])]).T
@@ -104,8 +105,8 @@ class ColmapIO:
                     img['uvs'].append(p[3 * ii])
                     img['uvs'].append(p[3 * ii + 1])
                     img['point3D_ids'].append(p[3 * ii + 2])
-                images_list.append(img)
                 first_row = True
+            images_list.append(img)
                 
         images_dict = {}
         for img in images_list:
@@ -215,7 +216,7 @@ class ColmapIO:
 
     def write_points3D(self, points3D_file_path, points3D):
         mean_track_length = 0
-        if len(points3D) >= 0:
+        if len(points3D) > 0:
             mean_track_length = sum((len(pt['img_pt'])/2 for pt in points3D))/len(points3D)
         points3D_file = open(points3D_file_path, "w")
         points3D_file.write( \

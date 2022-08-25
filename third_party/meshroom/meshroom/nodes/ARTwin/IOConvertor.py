@@ -1,4 +1,5 @@
 from __future__ import print_function
+from distutils.log import error
 
 __version__ = '0.1'
 
@@ -19,6 +20,8 @@ from src.colmap.Colmap import Colmap
 from src.colmap.ColmapIO import ColmapIO
 from src.utils.UtilsMath import UtilsMath
 from src.hloc.Hloc import Hloc
+from pathlib import Path
+from scipy.spatial.transform import Rotation as R
 
 Intrinsic = [
     desc.IntParam(name='intrinsicId', label='Id', description='Intrinsic UID', value=-1, uid=[0], range=None),
@@ -51,6 +54,15 @@ different format.
 '''
 
     inputs = [
+        desc.File(
+            name='keyframesFolder',
+            label='Keyframes Folder',
+            description='''
+            Keyframes folder of images used for the mapping 
+            .''',
+            value='',
+            uid=[0]
+        ),
         desc.File(
             name='inputFolder',
             label='Input Folder',
@@ -218,6 +230,10 @@ different format.
         )
     ]
 
+    def get_closest_index(self, query, times):
+        diff = np.abs(times - query)
+        min_ind = np.argmin(diff)
+        return min_ind
 
     def processChunk(self, chunk):
         try:
@@ -270,19 +286,45 @@ different format.
                 cameras, images, points3D = colmap_io.load_model(chunk.node.inputFolder.value)
 
             # ADD FOR CONVERSION FROM ORB SLAM
-            if chunk.node.inputsFMFormat.value == "ORB-SLAM":
+            if chunk.node.inputSfMFormat.value == 'ORB-SLAM':
                 pose_file = None
                 if not chunk.node.PosesFile:
                     chunk.logger.error("Please enter path of pose file. Does not work without it")
                 else:
                     chunk.logger.info("Pose file found and fully loaded")
-                    pose_file = chunk.node.PosesFile
-                cameras = {}
-                points3D = []
-                utils_math = UtilsMath()
-                images_list = []
+                    pose_file = Path(chunk.node.PosesFile.value)
+                if not chunk.node.keyframesFolder:
+                    chunk.logger.error("Where is the Keyframes folder??? Cannot work without it")
+                else:
+                    chunk.logger.info("Found keyframes folder")
 
-                # cameras, images, points3D = 
+                images_folder = Path(chunk.node.keyframesFolder.value)
+                images_list = images_folder.glob('*.jpg') # TODO: JPG/PNG 
+                images_list = [x for x in images_list if x.is_file()]
+                filetype = pose_file.suffix
+                assert filetype == ".json", "Incorrect file type for poses file"
+                import json
+                f = open(str(pose_file))
+
+                poseData = json.load(f)
+                times = np.asarray([data['time'] for data in poseData], dtype=np.longlong )
+                images_dict = {}
+                ct=1
+            
+                for image in images_list:
+                    image_timestamp = int(image.name.split('.')[0])
+                    closest_timestamp_index = self.get_closest_index(image_timestamp, times)
+                    approx_image_position = np.asarray(poseData[closest_timestamp_index]['position']).reshape((3,1))
+                    approx_orientation_quat = np.asarray(poseData[closest_timestamp_index]['orientation'])
+                    approx_R = np.asmatrix(R.from_quat(approx_orientation_quat).as_matrix())
+                    C = np.asmatrix(-approx_R.T @ approx_image_position)
+                    images_dict[ct] =  {'image_id': ct, 'camera_id': '1', 'R': approx_R, 'C': C, 'name': image.name, 'uvs':[], 'point3D_ids':[] } 
+                    ct+=1 
+                images = images_dict
+                cameras = {}
+                # Give some dummy camera
+                cameras[1] = {'camera_id':1, 'model': 'RADIAL', 'width':3264, 'height':2448, 'f':0, 'pp':[0,0], 'rd':[0,0] }
+                points3D = []
 
             # update the pointcloud and the observations 
             if chunk.node.pointcloudFile.value:
@@ -347,7 +389,7 @@ different format.
                 
 
 
-            chunk.logger.info('HoloLensIO done.') 
+            chunk.logger.info('IOConversion done.') 
 
         except AssertionError as err:
             chunk.logger.error('Error in keyframe selector: ' + err)
