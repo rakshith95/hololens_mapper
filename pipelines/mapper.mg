@@ -6,12 +6,12 @@
         "nodesVersions": {
             "ModelsAligner": "0.1",
             "IOConvertor": "0.1",
-            "Mapper": "0.1",
-            "HlocMapCreator": "0.1",
-            "KeyframeSelector": "0.1",
             "PoseFilter": "0.1",
+            "KeyframeSelector": "0.1",
+            "KeypointsDetector": "0.1",
+            "Mapper": "0.1",
             "Matcher": "0.1",
-            "KeypointsDetector": "0.1"
+            "HlocMapCreator": "0.1"
         }
     },
     "graph": {
@@ -27,7 +27,7 @@
                 "split": 1
             },
             "uids": {
-                "0": "ae64a1755e1e6fc3126b825147e48c29fd8db41a"
+                "0": "87e5119705d830a22fed4ccc4766134287998c1f"
             },
             "internalFolder": "{cache}/{nodeType}/{uid0}/",
             "inputs": {
@@ -83,7 +83,7 @@
                 "split": 1
             },
             "uids": {
-                "0": "187a7c676e4d0b17c797ea3f90ea992082046bec"
+                "0": "f55d69f359a378efd95ad00fe4341145a0aac9c8"
             },
             "internalFolder": "{cache}/{nodeType}/{uid0}/",
             "inputs": {
@@ -99,8 +99,8 @@
         "KeypointsDetector_1": {
             "nodeType": "KeypointsDetector",
             "position": [
-                9,
-                -264
+                15,
+                -260
             ],
             "parallelization": {
                 "blockSize": 0,
@@ -108,11 +108,11 @@
                 "split": 1
             },
             "uids": {
-                "0": "756ba7a33a9f6d3284fff99e0e98896e1951440c"
+                "0": "5ead1b8004d0c05940b7d3ad3f5fc0afd5954951"
             },
             "internalFolder": "{cache}/{nodeType}/{uid0}/",
             "inputs": {
-                "imagesFolder": "{PoseFilter_1.inputDir}",
+                "imagesFolder": "{PoseFilter_1.output}",
                 "database": "",
                 "algorithm": "SIFT",
                 "removeImages": true,
@@ -162,61 +162,6 @@
                 "densePts": "{cache}/{nodeType}/{uid0}/model.obj"
             }
         },
-        "ModelsAligner_1": {
-            "nodeType": "ModelsAligner",
-            "position": [
-                690,
-                -29
-            ],
-            "parallelization": {
-                "blockSize": 0,
-                "size": 1,
-                "split": 1
-            },
-            "uids": {
-                "0": "a4ea88340987286b3212a5fd226b13384afb6958"
-            },
-            "internalFolder": "{cache}/{nodeType}/{uid0}/",
-            "inputs": {
-                "sfmTransform": "{Mapper_1.output}",
-                "ptsTransform": "",
-                "sfmReference": "{IOConvertor_1.output}",
-                "alignerType": [
-                    "sfm"
-                ],
-                "verboseLevel": "info"
-            },
-            "outputs": {
-                "output": "{cache}/{nodeType}/{uid0}/",
-                "transforedPts": "{cache}/{nodeType}/{uid0}/model.obj"
-            }
-        },
-        "HlocMapCreator_2": {
-            "nodeType": "HlocMapCreator",
-            "position": [
-                866,
-                -305
-            ],
-            "parallelization": {
-                "blockSize": 0,
-                "size": 1,
-                "split": 1
-            },
-            "uids": {
-                "0": "da3d7410fb8c8e6fe8c492a1ddfca0e303427978"
-            },
-            "internalFolder": "{cache}/{nodeType}/{uid0}/",
-            "inputs": {
-                "inputSfM": "{ModelsAligner_1.output}",
-                "imageDirectory": "{Mapper_1.imagesDirectory}",
-                "imageFolderNames": "",
-                "copyDensePts": false,
-                "verboseLevel": "debug"
-            },
-            "outputs": {
-                "output": "{cache}/{nodeType}/{uid0}/"
-            }
-        },
         "PoseFilter_1": {
             "nodeType": "PoseFilter",
             "position": [
@@ -244,6 +189,63 @@
             },
             "outputs": {
                 "output": "{cache}/{nodeType}/{uid0}/"
+            }
+        },
+        "HlocMapCreator_2": {
+            "nodeType": "HlocMapCreator",
+            "position": [
+                771,
+                -296
+            ],
+            "parallelization": {
+                "blockSize": 0,
+                "size": 1,
+                "split": 1
+            },
+            "uids": {
+                "0": "af7ce4577dbcd3d9bd9e39d419151a172ece12c8"
+            },
+            "internalFolder": "{cache}/{nodeType}/{uid0}/",
+            "inputs": {
+                "inputSfM": "{ModelsAligner_1.output}",
+                "imageDirectory": "{Mapper_1.imagesDirectory}",
+                "imageFolderNames": "",
+                "copyDensePts": false,
+                "verboseLevel": "debug"
+            },
+            "outputs": {
+                "output": "{cache}/{nodeType}/{uid0}/"
+            }
+        },
+        "ModelsAligner_1": {
+            "nodeType": "ModelsAligner",
+            "position": [
+                631,
+                -38
+            ],
+            "parallelization": {
+                "blockSize": 0,
+                "size": 1,
+                "split": 1
+            },
+            "uids": {
+                "0": "2c7c97a16fac278a4714c4419adda92c149316db"
+            },
+            "internalFolder": "{cache}/{nodeType}/{uid0}/",
+            "inputs": {
+                "sfmTransform": "{Mapper_1.output}",
+                "ptsTransform": "",
+                "sfmReference": "{IOConvertor_1.output}",
+                "alignerType": [
+                    "sfm"
+                ],
+                "verboseLevel": "info",
+                "RANSAC": false,
+                "ransacInlierThreshold": 0.1
+            },
+            "outputs": {
+                "output": "{cache}/{nodeType}/{uid0}/",
+                "transforedPts": "{cache}/{nodeType}/{uid0}/model.obj"
             }
         }
     }

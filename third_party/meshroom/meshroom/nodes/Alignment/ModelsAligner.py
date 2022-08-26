@@ -129,7 +129,7 @@ This node COLMAP mapper on database which contains matches.
 
 
             chunk.logger.info('Find the transformation.')
-            if not chunk.node.RANSAC:
+            if not chunk.node.RANSAC.value:
                 transformation = utils_math.estimate_colmap_to_colmap_transformation(ref_images, images)
             else:
                 transformation = utils_math.estimate_colmap_to_colmap_transformation(ref_images, images, use_ransac=True, ransac_inlier_threshold=chunk.node.ransacInlierThreshold.value)

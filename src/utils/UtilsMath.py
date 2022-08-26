@@ -1,5 +1,6 @@
 import ctypes
 import pathlib
+from random import sample
 import numpy as np
 from numpy import Inf, linalg
 import numpy.matlib
@@ -218,17 +219,17 @@ class UtilsMath:
         else:
             minimal_pts = 3
             indices = np.arange(0, X_ref.shape[1])
-            nIterations = math.log((1-0.99))/math.log(1-0.4**3)
+            nIterations = int(math.log((1-0.99))/math.log(1-0.4**minimal_pts))
             nbest = 0
             best = None
             for i in range(nIterations):
-                sample_indices = np.random.choice(indices, 3)
+                sample_indices = np.random.choice(indices, minimal_pts)
                 x_ref = X_ref[:, sample_indices]
                 x_transformed = X_transformed[:, sample_indices]
 
                 s,R,t = self.get_transform(x_ref, x_transformed)
-                notx_ref = np.delete(X_ref, sample_indices)
-                notx_transformed = np.delete(X_transformed, sample_indices)
+                notx_ref = np.delete(X_ref, sample_indices, axis=1)
+                notx_transformed = np.delete(X_transformed, sample_indices, axis=1)
                 transformed = self.transform_points(notx_transformed, s, R, t)
 
                 errs = np.linalg.norm(notx_ref - transformed, axis=0)
