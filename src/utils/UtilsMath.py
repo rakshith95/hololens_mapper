@@ -10,7 +10,7 @@ import sys
 import multiprocessing as mp
 import cv2
 import matplotlib.pyplot as plt
-
+import math
 from PIL import Image
 from src.holo.HoloIO import HoloIO
 
@@ -101,7 +101,7 @@ class UtilsMath:
         return (colmap_C, holo_C)
 
 
-    def estimate_colmap_to_colmap_transformation(self, reference_images, transformed_images):
+    def estimate_colmap_to_colmap_transformation(self, reference_images, transformed_images, use_ransac=False, ransac_inlier_threshold=0.1):
         reference_C = np.array([]).reshape(3,0)
         transformed_C = np.array([]).reshape(3,0)
 
@@ -119,7 +119,7 @@ class UtilsMath:
         # savemat('/local1/projects/artwin/mapping/hololens_mapper/pipelines/MeshroomCache/HlocLocalizer/78e3afadb7ad4b73fff4d28b47372162efb55e9e', \
         #     {'reference_C':reference_C, 'transformed_C': transformed_C})
 
-        return self.estimate_euclidean_transformation(reference_C, transformed_C)
+        return self.estimate_euclidean_transformation(reference_C, transformed_C, ransac=use_ransac, inlier_err_thresh=ransac_inlier_threshold)
 
 
     def merge_common_cameras(self, cameras1, cameras2, eps = 10^-4):
@@ -186,8 +186,7 @@ class UtilsMath:
         colmap_C, holo_C = self.compose_coresponding_camera_centers(colmap_cameras, holo_cameras)
         return self.estimate_euclidean_transformation(holo_C, colmap_C)
 
-
-    def estimate_euclidean_transformation(self, X_ref, X_transformed):
+    def get_transform(self, X_ref, X_transformed):
         # scale input points
         mc = np.mean(X_transformed, axis=1)
         mh = np.mean(X_ref, axis=1)
@@ -208,7 +207,39 @@ class UtilsMath:
             R = U * V
         s = np.sum(S) * normh / normc
         t = mh - s*R*mc
+        return s, R, t
+    
+    def transform_points(self, X, s,R,t):
+        return s*R@X + t
 
+    def estimate_euclidean_transformation(self, X_ref, X_transformed, ransac=False, inlier_err_thresh=0.1):
+        if not ransac: 
+            s,R,t = self.get_transform(X_ref, X_transformed)
+        else:
+            minimal_pts = 3
+            indices = np.arange(0, X_ref.shape[1])
+            nIterations = math.log((1-0.99))/math.log(1-0.4**3)
+            nbest = 0
+            best = None
+            for i in range(nIterations):
+                sample_indices = np.random.choice(indices, 3)
+                x_ref = X_ref[:, sample_indices]
+                x_transformed = X_transformed[:, sample_indices]
+
+                s,R,t = self.get_transform(x_ref, x_transformed)
+                notx_ref = np.delete(X_ref, sample_indices)
+                notx_transformed = np.delete(X_transformed, sample_indices)
+                transformed = self.transform_points(notx_transformed, s, R, t)
+
+                errs = np.linalg.norm(notx_ref - transformed, axis=0)
+                print(errs)  
+                num_inliers = np.count_nonzero(errs<inlier_err_thresh)
+                if num_inliers >= nbest:
+                    nbest = num_inliers
+                    best = (s,R,t)
+            s = best[0]
+            R = best[1]
+            t = best[2]
         return {"scale": s, "rotation": R, "translation": t}
 
 

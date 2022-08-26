@@ -18,10 +18,10 @@ from src.holo.HoloIO import HoloIO
 from src.holo.HoloIO2 import HoloIO2
 from src.utils.UtilsKeyframes import UtilsKeyframes
 from pathlib import Path
-from scipy.spatial import KDTree
+import shutil
 import copy
 import math
-
+from tqdm import tqdm as tqdm
 class PoseFilter(desc.Node):
     category = 'Input Preprocessing'
     documentation = '''
@@ -93,6 +93,16 @@ class PoseFilter(desc.Node):
             )
         ]
 
+    outputs = [
+        desc.File(
+            name="output",
+            label="Output Folder",
+            description="",
+            value=desc.Node.internalFolder,
+            uid=[],
+            ),
+    ]
+
     def quaternion_multiply(self, quaternion1, quaternion0):
         w0, x0, y0, z0 = quaternion0
         w1, x1, y1, z1 = quaternion1
@@ -134,10 +144,11 @@ class PoseFilter(desc.Node):
             chunk.logManager.start(chunk.node.verboseLevel.value)
 
             inputFolder = None
+            outputFolder = Path(chunk.node.output.value)
             if not chunk.node.inputDir:
                 chunk.logger.error('Nothing to process')
                 return
-            # if not chunk.node.gridNum:
+
             inputFolder = Path(chunk.node.inputDir.value)
             chunk.logger.info('Filter frames by their poses')
             images = inputFolder.glob('*.'+chunk.node.imageType.value)
@@ -159,8 +170,8 @@ class PoseFilter(desc.Node):
                 seen_positions = None
                 seen_orientations = []
                 num_seen = [0]
-
-                for image in images:
+                
+                for image in tqdm(images):
                     image_timestamp = int(image.name.split('.')[0])
                     closest_timestamp_index = self.get_closest_index(image_timestamp, times)
                     approx_image_position_by_timestamp = np.asarray(poseData[closest_timestamp_index]['position']).reshape((3,1))
@@ -193,12 +204,14 @@ class PoseFilter(desc.Node):
                         relative_orientation_euler_deg = np.rad2deg( self.euler_from_quaternion(relative_orientation_quat) )
                         if dists[min_dist_ind] <= chunk.node.distanceThreshold.value and np.linalg.norm(relative_orientation_euler_deg) <= chunk.node.orientationThreshold.value:
                             num_seen[min_dist_ind] += 1
-                            if num_seen[min_dist_ind] >= 2:
-                                image.unlink()
-                        else:
-                            seen_positions = np.append(seen_positions, approx_image_position_by_timestamp, axis=1)
-                            seen_orientations.append(approx_image_orientation_by_timestamp)
-                            num_seen.append(1)
+                            if num_seen[min_dist_ind] >= chunk.node.maxCamerasinPosition.value:
+                                continue
+            
+                        # chunk.logger.info("Copy image "+image.name)
+                        shutil.copy(image, outputFolder.joinpath(image.name)) 
+                        seen_positions = np.append(seen_positions, approx_image_position_by_timestamp, axis=1)
+                        seen_orientations.append(approx_image_orientation_by_timestamp)
+                        num_seen.append(1)
 
         except AssertionError as err:
             chunk.logger.error("Error in PoseFilter: " + err)

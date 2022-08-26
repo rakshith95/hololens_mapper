@@ -4,22 +4,22 @@
         "releaseVersion": "2021.1.0",
         "fileVersion": "1.1",
         "nodesVersions": {
-            "HlocMapCreator": "0.1",
             "ModelsAligner": "0.1",
-            "KeyframeSelector": "0.1",
             "IOConvertor": "0.1",
-            "KeypointsDetector": "0.1",
             "Mapper": "0.1",
+            "HlocMapCreator": "0.1",
+            "KeyframeSelector": "0.1",
+            "PoseFilter": "0.1",
             "Matcher": "0.1",
-            "PoseFilter": "0.1"
+            "KeypointsDetector": "0.1"
         }
     },
     "graph": {
         "Matcher_1": {
             "nodeType": "Matcher",
             "position": [
-                220,
-                -261
+                267,
+                -291
             ],
             "parallelization": {
                 "blockSize": 0,
@@ -27,7 +27,7 @@
                 "split": 1
             },
             "uids": {
-                "0": "d6382ee2bd14ec96ee6eda4168093178bfc35104"
+                "0": "ae64a1755e1e6fc3126b825147e48c29fd8db41a"
             },
             "internalFolder": "{cache}/{nodeType}/{uid0}/",
             "inputs": {
@@ -46,8 +46,8 @@
         "KeyframeSelector_1": {
             "nodeType": "KeyframeSelector",
             "position": [
-                -375,
-                -404
+                -449,
+                -249
             ],
             "parallelization": {
                 "blockSize": 0,
@@ -55,12 +55,12 @@
                 "split": 1
             },
             "uids": {
-                "0": "bf77a3bcf73163cc94580704ab677c5a82d67dbe"
+                "0": "80f19820b527bab5cb8e61cfe81837bd4f48913f"
             },
             "internalFolder": "{cache}/{nodeType}/{uid0}/",
             "inputs": {
                 "recordingDir": "/run/user/1000/gvfs/sftp:host=data.ciirc.cvut.cz,user=madharak/nfs/datasets/SPRING/ARI/Hloc_Broca_test/BrocaFrontRearFisheyeSubset",
-                "imageFolderNames": "/run/user/1000/gvfs/sftp:host=data.ciirc.cvut.cz,user=madharak/nfs/datasets/SPRING/ARI/Hloc_Broca_test/BrocaFrontRearFisheyeSubset/allImageFolders",
+                "imageFolderNames": "/run/user/1000/gvfs/sftp:host=data.ciirc.cvut.cz,user=madharak/nfs/datasets/SPRING/ARI/Hloc_Broca_test/BrocaFrontRearFisheyeSubset/allImagesFolders",
                 "recordingSource": "BROCA",
                 "pvBlurThreshold": 32.0,
                 "pvMinFrameOffset": 0,
@@ -74,8 +74,8 @@
         "Mapper_1": {
             "nodeType": "Mapper",
             "position": [
-                421,
-                -224
+                525,
+                -291
             ],
             "parallelization": {
                 "blockSize": 0,
@@ -83,7 +83,7 @@
                 "split": 1
             },
             "uids": {
-                "0": "0d03af56b97447eef4478397ea40d24e6267f38f"
+                "0": "187a7c676e4d0b17c797ea3f90ea992082046bec"
             },
             "internalFolder": "{cache}/{nodeType}/{uid0}/",
             "inputs": {
@@ -99,8 +99,8 @@
         "KeypointsDetector_1": {
             "nodeType": "KeypointsDetector",
             "position": [
-                -3,
-                -250
+                9,
+                -264
             ],
             "parallelization": {
                 "blockSize": 0,
@@ -108,7 +108,7 @@
                 "split": 1
             },
             "uids": {
-                "0": "aaff9e221d8b6303ce8aa5f07c6a8de9f5f6c62d"
+                "0": "756ba7a33a9f6d3284fff99e0e98896e1951440c"
             },
             "internalFolder": "{cache}/{nodeType}/{uid0}/",
             "inputs": {
@@ -125,8 +125,8 @@
         "IOConvertor_1": {
             "nodeType": "IOConvertor",
             "position": [
-                115,
-                -510
+                191,
+                32
             ],
             "parallelization": {
                 "blockSize": 0,
@@ -134,14 +134,14 @@
                 "split": 1
             },
             "uids": {
-                "0": "2e181a65d0945082231f800d6eb3af2a097992af"
+                "0": "bbea6fb12fe3ae251744e5ae200de4b74fd5740c"
             },
             "internalFolder": "{cache}/{nodeType}/{uid0}/",
             "inputs": {
                 "keyframesFolder": "{KeyframeSelector_1.output}",
                 "inputFolder": "",
                 "pointcloudFile": "",
-                "PosesFile": "/run/user/1000/gvfs/sftp:host=data.ciirc.cvut.cz,user=madharak/nfs/datasets/SPRING/ARI/3rd_floor_lab/VICON_exp/images/2/robot_pose.json",
+                "PosesFile": "/run/user/1000/gvfs/sftp:host=data.ciirc.cvut.cz,user=madharak/nfs/datasets/SPRING/ARI/Hloc_Broca_test/BrocaFrontRearFisheyeSubset/all_poses/combined_poses.json",
                 "hashScale": 1,
                 "renderScale": 1,
                 "allPoints": false,
@@ -165,8 +165,8 @@
         "ModelsAligner_1": {
             "nodeType": "ModelsAligner",
             "position": [
-                545,
-                -424
+                690,
+                -29
             ],
             "parallelization": {
                 "blockSize": 0,
@@ -174,7 +174,7 @@
                 "split": 1
             },
             "uids": {
-                "0": "d9855fe27139bd3160bf1206c60ef732141df69a"
+                "0": "a4ea88340987286b3212a5fd226b13384afb6958"
             },
             "internalFolder": "{cache}/{nodeType}/{uid0}/",
             "inputs": {
@@ -194,8 +194,8 @@
         "HlocMapCreator_2": {
             "nodeType": "HlocMapCreator",
             "position": [
-                710,
-                -249
+                866,
+                -305
             ],
             "parallelization": {
                 "blockSize": 0,
@@ -203,7 +203,7 @@
                 "split": 1
             },
             "uids": {
-                "0": "4b4a13b8305fcf7465cf85015fa5015c3107a50c"
+                "0": "da3d7410fb8c8e6fe8c492a1ddfca0e303427978"
             },
             "internalFolder": "{cache}/{nodeType}/{uid0}/",
             "inputs": {
@@ -229,20 +229,22 @@
                 "split": 1
             },
             "uids": {
-                "0": "846cddd136a95ca22ea75718e8b551a88daa14f5"
+                "0": "3996474776cf5080fdfb382695c6df4fb4c1201b"
             },
             "internalFolder": "{cache}/{nodeType}/{uid0}/",
             "inputs": {
                 "inputDir": "{KeyframeSelector_1.output}",
                 "PoseFile": "/run/user/1000/gvfs/sftp:host=data.ciirc.cvut.cz,user=madharak/nfs/datasets/SPRING/ARI/Hloc_Broca_test/BrocaFrontRearFisheyeSubset/all_poses/combined_poses.json",
                 "PoseFilter": true,
-                "distanceThreshold": 0.2,
-                "orientationThreshold": 55.0,
-                "maxCamerasinPosition": 2,
+                "distanceThreshold": 0.1,
+                "orientationThreshold": 30.0,
+                "maxCamerasinPosition": 3,
                 "imageType": "jpg",
                 "verboseLevel": "info"
             },
-            "outputs": {}
+            "outputs": {
+                "output": "{cache}/{nodeType}/{uid0}/"
+            }
         }
     }
 }

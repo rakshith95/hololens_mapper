@@ -4,7 +4,7 @@ import cv2
 import shutil
 from itertools import compress
 from pathlib import Path
-
+from tqdm import tqdm 
 
 class UtilsKeyframes():
 
@@ -105,11 +105,11 @@ class UtilsKeyframes():
             
             logger.info(f'Copying {len(images_to_copy[i])} selected keyframes from {source_dir} to {destination_dir}.')
             try:
-                for image_path_src in images_to_copy[i]:
+                for image_path_src in tqdm(images_to_copy[i]):
                     path_from = source_dir + '/' + image_path_src
                     path_to = destination_dir + '/' + image_path_src
-                    if logger:
-                        logger.debug(f'Copy: {path_from} --> {path_to}')
+                    # if logger:
+                        # logger.debug(f'Copy: {path_from} --> {path_to}')
 
                     shutil.copy(path_from, path_to) 
 

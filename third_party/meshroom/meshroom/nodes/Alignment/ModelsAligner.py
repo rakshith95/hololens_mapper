@@ -66,6 +66,20 @@ This node COLMAP mapper on database which contains matches.
             exclusive=True,
             uid=[],
         ),
+        desc.BoolParam(
+            name='RANSAC', 
+            label='Use RANSAC',
+            description='''If true, use RANSAC for estimating similarity transform.''',
+            value=False, 
+            uid=[0]
+        ),
+        desc.FloatParam(
+            name='ransacInlierThreshold',
+            label='ransac inlier threshold', 
+            description='Inlier threshold value for ransac',
+            value=0.1, 
+            uid=[0], 
+            range=None)
         ]
 
     outputs = [
@@ -115,7 +129,10 @@ This node COLMAP mapper on database which contains matches.
 
 
             chunk.logger.info('Find the transformation.')
-            transformation = utils_math.estimate_colmap_to_colmap_transformation(ref_images, images)
+            if not chunk.node.RANSAC:
+                transformation = utils_math.estimate_colmap_to_colmap_transformation(ref_images, images)
+            else:
+                transformation = utils_math.estimate_colmap_to_colmap_transformation(ref_images, images, use_ransac=True, ransac_inlier_threshold=chunk.node.ransacInlierThreshold.value)
 
 
             if 'sfm' in chunk.node.alignerType.value: 
