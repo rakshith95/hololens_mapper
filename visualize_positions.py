@@ -48,13 +48,4 @@ positions_2 = np.asarray(positions_2)
 ax.scatter(positions_1[:,0],positions_1[:,1], positions_1[:,2],'+', color='red')
 ax.scatter(positions_2[:,0],positions_2[:,1], positions_2[:,2],'+', color='blue')
 
-
-
-
-
-
-
-
-
-
 plt.show()

@@ -155,7 +155,6 @@ class PoseFilter(desc.Node):
             images = [x for x in images if x.is_file()]
             
             seen_orientations = []
-
             if chunk.node.PoseFilter.value == True:
                 assert os.path.isfile(chunk.node.PoseFile.value), "Poses file not found"
                 poseFile = Path(chunk.node.PoseFile.value)

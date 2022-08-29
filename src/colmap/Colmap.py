@@ -18,18 +18,27 @@ class Colmap():
         self._colmap_container = colmap_container
         self._utils_math = UtilsMath()
 
-    def extract_features(self, database_path, image_path, settings={}):
+    def extract_features(self, database_path, image_path, camera_model, settings={}):
         self._colmap_container.command_dict("colmap feature_extractor", 
             {"database_path": database_path, 
             "image_path": image_path,
-            "ImageReader.camera_model": "RADIAL",
+            "ImageReader.camera_model": camera_model,
             "ImageReader.single_camera_per_folder": 1,
+            "SiftExtraction.max_image_size":3300,
             **settings
             })
 
     def exhaustive_matcher(self, database_path):
         self._colmap_container.command_dict("colmap exhaustive_matcher", 
             {"database_path": database_path})
+
+    def sequential_matcher(self, database_path, vocabTreePath=None):
+        if vocabTreePath is None:
+            self._colmap_container.command_dict("colmap sequential_matcher", 
+                {"database_path": database_path})
+        else:
+            self._colmap_container.command_dict("colmap sequential_matcher", 
+                {"database_path": database_path, "SequentialMatching.loop_detection": 1, "SequentialMatching.vocab_tree_path": vocabTreePath})
 
     def custom_matching(self, database_path, match_list_path, 
         match_type = 'pairs', max_error = 4):
@@ -45,6 +54,7 @@ class Colmap():
             "image_path": image_path,
             "output_path": output_path,
             "Mapper.min_model_size": 5,
+            "Mapper.min_num_matches": 10,
             "Mapper.ba_global_images_ratio": 1.2, 
             "Mapper.ba_global_points_ratio": 1.2, 
             "Mapper.ba_global_max_num_iterations": 20,

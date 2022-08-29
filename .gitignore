@@ -12,3 +12,6 @@ MeshroomCache*/
 VGG16-NetVLAD-Pitts30K.mat
 .ipynb_checkpoints/
 Spring_D2_4.pdf
+seen_pos.npy
+show.py
+visualize_loc.py

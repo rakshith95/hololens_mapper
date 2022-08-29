@@ -228,12 +228,9 @@ class UtilsMath:
                 x_transformed = X_transformed[:, sample_indices]
 
                 s,R,t = self.get_transform(x_ref, x_transformed)
-                notx_ref = np.delete(X_ref, sample_indices, axis=1)
-                notx_transformed = np.delete(X_transformed, sample_indices, axis=1)
-                transformed = self.transform_points(notx_transformed, s, R, t)
+                transformed = self.transform_points(x_transformed, s, R, t)
 
-                errs = np.linalg.norm(notx_ref - transformed, axis=0)
-                print(errs)  
+                errs = np.linalg.norm(x_ref - transformed, axis=0)
                 num_inliers = np.count_nonzero(errs<inlier_err_thresh)
                 if num_inliers >= nbest:
                     nbest = num_inliers

@@ -55,6 +55,15 @@ The database is in the COLMAP format.
             uid=[0],
             exclusive=True,
         ),  
+        desc.ChoiceParam(
+            name='cameraModel',
+            label='Camera Model',
+            description='COLMAP Camera Model of the camera you are using.',
+            value='OPENCV_FISHEYE',
+            values=['RADIAL', 'PINHOLE', 'SIMPLE_PINHOLE', 'OPENCV_FISHEYE'],
+            uid=[0],
+            exclusive=True,
+        ),        
         desc.BoolParam(
             name='removeImages', 
             label='Remove images',
@@ -118,7 +127,7 @@ The database is in the COLMAP format.
             # COLMAP detector
             if chunk.node.algorithm.value == 'SIFT':
                 chunk.logger.info('COLMAP --> compute SIFT features')
-                colmap.extract_features('/data/database.db', '/data')           # COLMAP feature extractor
+                colmap.extract_features('/data/database.db', '/data', chunk.node.cameraModel.value)           # COLMAP feature extractor
             
             # remove images in cache
             if chunk.node.removeImages.value:

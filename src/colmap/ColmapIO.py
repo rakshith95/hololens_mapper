@@ -62,7 +62,12 @@ class ColmapIO:
                     camera['f'] = float(p[4])
                     camera['pp'] = [float(p[5]), float(p[6])]
                     camera['rd'] = [float(p[7]), float(p[8])]
-
+                
+                if camera['model'] == 'OPENCV_FISHEYE':
+                    known_camera_model = True
+                    camera['f'] = [float(p[4]), float(p[5])]
+                    camera['pp'] = [float(p[6]), float(p[7])]
+                    camera['rd'] = [float(p[8]), float(p[9]), float(p[10]), float(p[11])]
                 assert known_camera_model, "Unsuported camera model"                
                 camera_dict[camera['camera_id']] = camera
                 
@@ -179,6 +184,10 @@ class ColmapIO:
             if cam['model'] == "RADIAL":
                 known_camera_model = True
                 params.extend(cam['rd'])
+            if cam['model'] == 'OPENCV_FISHEYE':
+                known_camera_model = True
+                params.extend(cam['rd'])
+                
             assert known_camera_model, "Unsuported camera model"
             line = " ".join(map(str, params))
             cameras_file.write(line + "\n")

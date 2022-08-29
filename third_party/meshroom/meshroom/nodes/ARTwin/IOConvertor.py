@@ -317,7 +317,8 @@ different format.
                     approx_image_position = np.asarray(poseData[closest_timestamp_index]['position']).reshape((3,1))
                     approx_orientation_quat = np.asarray(poseData[closest_timestamp_index]['orientation'])
                     approx_R = np.asmatrix(R.from_quat(approx_orientation_quat).as_matrix())
-                    C = np.asmatrix(-approx_R.T @ approx_image_position)
+                    Rot = approx_R.T
+                    C = approx_image_position
                     images_dict[ct] =  {'image_id': ct, 'camera_id': '1', 'R': approx_R, 'C': C, 'name': image.name, 'uvs':[], 'point3D_ids':[] } 
                     ct+=1 
                 images = images_dict

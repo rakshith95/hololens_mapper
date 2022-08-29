@@ -108,9 +108,6 @@ class UtilsKeyframes():
                 for image_path_src in tqdm(images_to_copy[i]):
                     path_from = source_dir + '/' + image_path_src
                     path_to = destination_dir + '/' + image_path_src
-                    # if logger:
-                        # logger.debug(f'Copy: {path_from} --> {path_to}')
-
                     shutil.copy(path_from, path_to) 
 
             except:

@@ -21,7 +21,7 @@
                 "split": 1
             },
             "uids": {
-                "0": "864fafcb545420ed5f88016f67c6eb84a4da5d0f"
+                "0": "035a144d705232682720da5c21d2624737171c39"
             },
             "internalFolder": "{cache}/{nodeType}/{uid0}/",
             "inputs": {
@@ -51,14 +51,14 @@
                 "split": 1
             },
             "uids": {
-                "0": "37de4633f07037ab81453de04d1f626c5bbd50de"
+                "0": "596b93a21ca139e38cdb6b6443962837cbee649e"
             },
             "internalFolder": "{cache}/{nodeType}/{uid0}/",
             "inputs": {
                 "imageDir": "True",
                 "images": [],
-                "hlocMapDir": "/home/rakshith/CTU/ARI/SPRING/hololens_mapper/pipelines/MeshroomCache/HlocMapCreator/577b6b00a40ab862f98621d8c4f6d55ffc6866b3",
-                "queryImageDir": "/run/user/1000/gvfs/sftp:host=data.ciirc.cvut.cz,user=madharak/nfs/datasets/SPRING/ARI/3rd_floor_lab/VICON_exp/images/5/query",
+                "hlocMapDir": "/home/rakshith/CTU/ARI/SPRING/hololens_mapper/pipelines/MeshroomCache/HlocMapCreator/353dc066c00f66805f9041d8bb5a5d798d6b686b",
+                "queryImageDir": "/run/user/1000/gvfs/sftp:host=data.ciirc.cvut.cz,user=madharak/nfs/datasets/SPRING/ARI/ARI_AprDataCollection_BROCA/rosbags&images/14AprExtractedImages/query_loc",
                 "sameCamera": "True",
                 "intrinsics": [
                     {

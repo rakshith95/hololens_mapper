@@ -68,11 +68,29 @@ This node compute matches between selected / all pairs of images.
             uid=[0],
             exclusive=True,
         ),
+        desc.ChoiceParam(
+            name='matchingType',
+            label='Matching Type',
+            description='Exhaustive or sequential matching',
+            value='Exhaustive',
+            values=['Exhaustive', 'Sequential'],
+            uid=[0],
+            exclusive=True,
+        ),
+        desc.File(
+            name='vocabTree',
+            label='Vocabulary Tree file',
+            description='''
+            The path for the vocabulary tree used for loop closure. 
+            ''',
+            value='',
+            uid=[0],
+        ),        
         desc.FloatParam(
             name='matchingTreshold',
             label='Matching threshold',
             description='''
-            The error threshold for mathces using tracking poses.''',
+            The error threshold for matches using tracking poses.''',
             value=2,
             range=(0.1, 30, 0.1),
             uid=[0],
@@ -135,8 +153,15 @@ This node compute matches between selected / all pairs of images.
 
             # matcher
             if not chunk.node.inputMatches or chunk.node.inputMatchesFormat.value == 'no data':
-                chunk.logger.info('COLMAP --> exhaustive matching')
-                colmap.exhaustive_matcher('/data/database.db')               # COLMAP matcher
+                if chunk.node.matchingType.value=='Exhaustive' or chunk.node.matchingType.value=='EXHAUSTIVE':
+                    chunk.logger.info('COLMAP --> exhaustive matching')
+                    colmap.exhaustive_matcher('/data/database.db')               # COLMAP matcher
+                elif chunk.node.matchingType.value=='Sequential' or chunk.node.matchingType.value=='SEQUENTIAL':
+                    if not chunk.node.vocabTree.value:
+                        colmap.sequential_matcher('/data/database.db')               # COLMAP seq matcher
+                    else:
+                        colmap.sequential_matcher('/data/database.db', chunk.node.vocabTree.value)
+
             else:
                 if chunk.node.inputMatchesFormat.value == 'image pairs':
                     chunk.logger.info('COLMAP --> matching of imported image pairs')
