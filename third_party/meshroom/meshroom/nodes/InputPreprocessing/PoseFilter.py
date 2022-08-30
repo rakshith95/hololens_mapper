@@ -37,6 +37,15 @@ class PoseFilter(desc.Node):
             uid=[0]
         ),
         desc.File(
+            name='imageFolderNames',
+            label='Image Folder Names',
+            description='''
+            A textfile containing the list of folder names, which have images.
+            If not supplied, the folder default hololens folder structure is assumed.''',
+            value='',
+            uid=[0],
+        ),
+        desc.File(
             name="PoseFile",
             label="Pose file",
             description="Input pose file json",
@@ -142,75 +151,86 @@ class PoseFilter(desc.Node):
     def processChunk(self, chunk):
         try:
             chunk.logManager.start(chunk.node.verboseLevel.value)
-
-            inputFolder = None
             outputFolder = Path(chunk.node.output.value)
             if not chunk.node.inputDir:
                 chunk.logger.error('Nothing to process')
                 return
+            if not chunk.node.imageFolderNames:
+                chunk.logger.error('Nothing to process')
+                return
+            with open(chunk.node.imageFolderNames.value, "r") as f:
+                img_folders = f.read().splitlines()
 
-            inputFolder = Path(chunk.node.inputDir.value)
+            recFolder = Path(chunk.node.inputDir.value)
+            image_folders = [recFolder.joinpath(Path(folder)) for folder in img_folders]
+            output_folders = [outputFolder.joinpath(Path(folder)) for folder in img_folders]
+            for op in output_folders:
+                if not op.is_dir():
+                    op.mkdir(parents=True)
+                    
             chunk.logger.info('Filter frames by their poses')
-            images = inputFolder.glob('*.'+chunk.node.imageType.value)
-            images = [x for x in images if x.is_file()]
-            
-            seen_orientations = []
-            if chunk.node.PoseFilter.value == True:
-                assert os.path.isfile(chunk.node.PoseFile.value), "Poses file not found"
-                poseFile = Path(chunk.node.PoseFile.value)
-                filetype = poseFile.suffix
-                assert filetype == ".json", "Incorrect file type for poses file"
-                import json
-                f = open(str(poseFile))
 
-                poseData = json.load(f)
-                times = np.asarray([data['time'] for data in poseData], dtype=np.longlong )
-
-                seen_positions = None
-                seen_orientations = []
-                num_seen = [0]
+            for ct,inputFolder in enumerate(image_folders):
+                images = inputFolder.glob('*.'+chunk.node.imageType.value)
+                images = [x for x in images if x.is_file()]
                 
-                for image in tqdm(images):
-                    image_timestamp = int(image.name.split('.')[0])
-                    closest_timestamp_index = self.get_closest_index(image_timestamp, times)
-                    approx_image_position_by_timestamp = np.asarray(poseData[closest_timestamp_index]['position']).reshape((3,1))
-                    approx_image_orientation_by_timestamp = poseData[closest_timestamp_index]['orientation']
-                    if seen_positions is None:
-                        seen_positions = copy.deepcopy(approx_image_position_by_timestamp)
-                        seen_orientations.append(approx_image_orientation_by_timestamp)
-                        num_seen[0] = 1
-                    else:
-                        diff = seen_positions - approx_image_position_by_timestamp
-                        dists = np.linalg.norm(diff, axis=0)
-                        min_dist_ind = np.argmin(dists)
-
-                        # Compute orientation diff
-                        q1_inv = [0]*4
-                        q2 = [0]*4 
-                        
-                        # REVERSE FOR ROS ANNOYING CONVENTION
-                        q1_inv[3] = seen_orientations[min_dist_ind][0]
-                        q1_inv[2] = seen_orientations[min_dist_ind][1]
-                        q1_inv[1] = seen_orientations[min_dist_ind][2]
-                        q1_inv[0] = -seen_orientations[min_dist_ind][3] # Negate for inverse
-
-                        q2[3] = approx_image_orientation_by_timestamp[0]
-                        q2[2] = approx_image_orientation_by_timestamp[1]
-                        q2[1] = approx_image_orientation_by_timestamp[2]
-                        q2[0] = approx_image_orientation_by_timestamp[3]
-
-                        relative_orientation_quat = self.quaternion_multiply(q2, q1_inv)
-                        relative_orientation_euler_deg = np.rad2deg( self.euler_from_quaternion(relative_orientation_quat) )
-                        if dists[min_dist_ind] <= chunk.node.distanceThreshold.value and np.linalg.norm(relative_orientation_euler_deg) <= chunk.node.orientationThreshold.value:
-                            num_seen[min_dist_ind] += 1
-                            if num_seen[min_dist_ind] >= chunk.node.maxCamerasinPosition.value:
-                                continue
-            
-                        # chunk.logger.info("Copy image "+image.name)
-                        shutil.copy(image, outputFolder.joinpath(image.name)) 
-                        seen_positions = np.append(seen_positions, approx_image_position_by_timestamp, axis=1)
-                        seen_orientations.append(approx_image_orientation_by_timestamp)
-                        num_seen.append(1)
+                seen_orientations = []
+                if chunk.node.PoseFilter.value == True:
+                    assert os.path.isfile(chunk.node.PoseFile.value), "Poses file not found"
+                    poseFile = Path(chunk.node.PoseFile.value)
+                    filetype = poseFile.suffix
+                    assert filetype == ".json", "Incorrect file type for poses file"
+                    import json
+                    f = open(str(poseFile))
+    
+                    poseData = json.load(f)
+                    times = np.asarray([data['time'] for data in poseData], dtype=np.longlong )
+    
+                    seen_positions = None
+                    seen_orientations = []
+                    num_seen = [0]
+                    
+                    for image in tqdm(images):
+                        image_timestamp = int(image.name.split('.')[0])
+                        closest_timestamp_index = self.get_closest_index(image_timestamp, times)
+                        approx_image_position_by_timestamp = np.asarray(poseData[closest_timestamp_index]['position']).reshape((3,1))
+                        approx_image_orientation_by_timestamp = poseData[closest_timestamp_index]['orientation']
+                        if seen_positions is None:
+                            seen_positions = copy.deepcopy(approx_image_position_by_timestamp)
+                            seen_orientations.append(approx_image_orientation_by_timestamp)
+                            num_seen[0] = 1
+                        else:
+                            diff = seen_positions - approx_image_position_by_timestamp
+                            dists = np.linalg.norm(diff, axis=0)
+                            min_dist_ind = np.argmin(dists)
+    
+                            # Compute orientation diff
+                            q1_inv = [0]*4
+                            q2 = [0]*4 
+                            
+                            # REVERSE FOR ROS ANNOYING CONVENTION
+                            q1_inv[3] = seen_orientations[min_dist_ind][0]
+                            q1_inv[2] = seen_orientations[min_dist_ind][1]
+                            q1_inv[1] = seen_orientations[min_dist_ind][2]
+                            q1_inv[0] = -seen_orientations[min_dist_ind][3] # Negate for inverse
+    
+                            q2[3] = approx_image_orientation_by_timestamp[0]
+                            q2[2] = approx_image_orientation_by_timestamp[1]
+                            q2[1] = approx_image_orientation_by_timestamp[2]
+                            q2[0] = approx_image_orientation_by_timestamp[3]
+    
+                            relative_orientation_quat = self.quaternion_multiply(q2, q1_inv)
+                            relative_orientation_euler_deg = np.rad2deg( self.euler_from_quaternion(relative_orientation_quat) )
+                            if dists[min_dist_ind] <= chunk.node.distanceThreshold.value and np.linalg.norm(relative_orientation_euler_deg) <= chunk.node.orientationThreshold.value:
+                                num_seen[min_dist_ind] += 1
+                                if num_seen[min_dist_ind] >= chunk.node.maxCamerasinPosition.value:
+                                    continue
+                
+                            # chunk.logger.info("Copy image "+image.name)
+                            shutil.copy(image, output_folders[ct].joinpath(image.name)) 
+                            seen_positions = np.append(seen_positions, approx_image_position_by_timestamp, axis=1)
+                            seen_orientations.append(approx_image_orientation_by_timestamp)
+                            num_seen.append(1)
 
         except AssertionError as err:
             chunk.logger.error("Error in PoseFilter: " + err)

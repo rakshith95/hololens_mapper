@@ -48,7 +48,12 @@ class Colmap():
             "match_type": match_type,
             "SiftMatching.max_error": max_error})
 
-    def mapper(self, database_path, image_path, output_path):
+    def mapper(self, database_path, image_path, output_path, ignore_two_view=True):
+        if ignore_two_view:
+            ignore_two_view=1
+        else:
+            ignore_two_view=0
+            
         self._colmap_container.command_dict("colmap mapper", 
             {"database_path": database_path, 
             "image_path": image_path,
@@ -59,7 +64,8 @@ class Colmap():
             "Mapper.ba_global_points_ratio": 1.2, 
             "Mapper.ba_global_max_num_iterations": 20,
             "Mapper.ba_global_max_refinements": 3,
-            "Mapper.ba_global_points_freq": 200000
+            "Mapper.ba_global_points_freq": 200000,
+            "Mapper.tri_ignore_two_view_tracks": ignore_two_view,
             })
 
     def images_undistortion(self, image_path, input_path, output_path):

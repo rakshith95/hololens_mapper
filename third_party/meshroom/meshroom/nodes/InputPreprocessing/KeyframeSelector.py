@@ -127,7 +127,7 @@ This node select subset of images (keyframes) and copy them to output path.
         # vlc_offset = chunk.node.vlcMinFrameOffset.value
         params['min_frame_offsets'] = [pv_offset] * len(img_folders)
         params['input_images_folders'] = [os.path.join(chunk.node.recordingDir.value, folder) for folder in img_folders]
-        params['output_images_folders'] = [chunk.node.output.value] 
+        params['output_images_folders'] = [os.path.join(chunk.node.output.value, folder) for folder in img_folders]
         return params
 
 

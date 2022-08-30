@@ -298,9 +298,14 @@ different format.
                 else:
                     chunk.logger.info("Found keyframes folder")
 
-                images_folder = Path(chunk.node.keyframesFolder.value)
-                images_list = images_folder.glob('*.jpg') # TODO: JPG/PNG 
-                images_list = [x for x in images_list if x.is_file()]
+                images_outer_folder = Path(chunk.node.keyframesFolder.value)
+                images_folders = [folder for folder in images_outer_folder.iterdir() if folder.is_dir()] 
+                images_list = []
+                for images_folder in images_folders:
+                    folder_list = images_folder.glob('*.jpg') # TODO: JPG/PNG 
+                    folder_list = [x.parent.name+'/'+x.name for x in folder_list if x.is_file()]
+                    images_list += folder_list
+
                 filetype = pose_file.suffix
                 assert filetype == ".json", "Incorrect file type for poses file"
                 import json
@@ -312,14 +317,14 @@ different format.
                 ct=1
             
                 for image in images_list:
-                    image_timestamp = int(image.name.split('.')[0])
+                    image_timestamp = int(image.split('/')[-1].split('.')[0] )
                     closest_timestamp_index = self.get_closest_index(image_timestamp, times)
                     approx_image_position = np.asarray(poseData[closest_timestamp_index]['position']).reshape((3,1))
                     approx_orientation_quat = np.asarray(poseData[closest_timestamp_index]['orientation'])
                     approx_R = np.asmatrix(R.from_quat(approx_orientation_quat).as_matrix())
                     Rot = approx_R.T
                     C = approx_image_position
-                    images_dict[ct] =  {'image_id': ct, 'camera_id': '1', 'R': approx_R, 'C': C, 'name': image.name, 'uvs':[], 'point3D_ids':[] } 
+                    images_dict[ct] =  {'image_id': ct, 'camera_id': '1', 'R': Rot, 'C': C, 'name': str(image), 'uvs':[], 'point3D_ids':[] } 
                     ct+=1 
                 images = images_dict
                 cameras = {}

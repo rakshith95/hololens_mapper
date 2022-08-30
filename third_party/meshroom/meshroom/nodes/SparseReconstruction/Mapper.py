@@ -55,6 +55,13 @@ This node COLMAP mapper on database which contains matches.
             uid=[0],
             exclusive=True,
         ),
+        desc.BoolParam(
+            name='ignoreTwoView', 
+            label='Ignore Two View',
+            description='For the Colmap option Mapper.tri_ignore_two_view_track',
+            value=True,
+            uid=[]
+        ),  
         desc.ChoiceParam(
             name='verboseLevel',
             label='Verbose Level',
@@ -103,8 +110,10 @@ This node COLMAP mapper on database which contains matches.
             else:
                 colmap_container = UtilsContainers("singularity", dir_path + "/colmap.sif", out_dir)
             colmap = Colmap(colmap_container)
-            
-            colmap.mapper("/data/database.db", "/data", "/data")
+            if chunk.ignoreTwoView.value:
+                colmap.mapper("/data/database.db", "/data", "/data")
+            else:
+                colmap.mapper("/data/database.db", "/data", "/data", ignore_two_view=False)
 
             # create txt files out of the largest reconstruction
             largest_reconstuction_dir = colmap.get_largest_reconstruction_dir(out_dir)
