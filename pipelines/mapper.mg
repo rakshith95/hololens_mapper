@@ -4,14 +4,14 @@
         "releaseVersion": "2021.1.0",
         "fileVersion": "1.1",
         "nodesVersions": {
-            "ModelsAligner": "0.1",
+            "Matcher": "0.1",
+            "KeypointsDetector": "0.1",
+            "HlocMapCreator": "0.1",
             "PoseFilter": "0.1",
             "Mapper": "0.1",
-            "HlocMapCreator": "0.1",
+            "ModelsAligner": "0.1",
             "KeyframeSelector": "0.1",
-            "IOConvertor": "0.1",
-            "Matcher": "0.1",
-            "KeypointsDetector": "0.1"
+            "IOConvertor": "0.1"
         }
     },
     "graph": {
@@ -38,31 +38,6 @@
                 "pvMinFrameOffset": 0,
                 "vlcMinFrameOffset": 0,
                 "verboseLevel": "debug"
-            },
-            "outputs": {
-                "output": "{cache}/{nodeType}/{uid0}/"
-            }
-        },
-        "Mapper_1": {
-            "nodeType": "Mapper",
-            "position": [
-                514,
-                -289
-            ],
-            "parallelization": {
-                "blockSize": 0,
-                "size": 1,
-                "split": 1
-            },
-            "uids": {
-                "0": "9fc9f38bad8c5684fcbe21919cc93338c4f7586e"
-            },
-            "internalFolder": "{cache}/{nodeType}/{uid0}/",
-            "inputs": {
-                "databaseFile": "{Matcher_1.databaseOutputFile}",
-                "imagesDirectory": "{KeypointsDetector_1.imagesFolder}",
-                "algorithm": "COLMAP",
-                "verboseLevel": "info"
             },
             "outputs": {
                 "output": "{cache}/{nodeType}/{uid0}/"
@@ -247,6 +222,32 @@
                 "imageFolderNames": "{PoseFilter_1.imageFolderNames}",
                 "copyDensePts": false,
                 "verboseLevel": "debug"
+            },
+            "outputs": {
+                "output": "{cache}/{nodeType}/{uid0}/"
+            }
+        },
+        "Mapper_1": {
+            "nodeType": "Mapper",
+            "position": [
+                514,
+                -289
+            ],
+            "parallelization": {
+                "blockSize": 0,
+                "size": 1,
+                "split": 1
+            },
+            "uids": {
+                "0": "9fc9f38bad8c5684fcbe21919cc93338c4f7586e"
+            },
+            "internalFolder": "{cache}/{nodeType}/{uid0}/",
+            "inputs": {
+                "databaseFile": "{Matcher_1.databaseOutputFile}",
+                "imagesDirectory": "{KeypointsDetector_1.imagesFolder}",
+                "algorithm": "COLMAP",
+                "ignoreTwoView": true,
+                "verboseLevel": "info"
             },
             "outputs": {
                 "output": "{cache}/{nodeType}/{uid0}/"
