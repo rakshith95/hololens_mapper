@@ -45,6 +45,13 @@ This node select subset of images (keyframes) and copy them to output path.
             value='',
             uid=[0],
         ),
+        desc.File(
+            name="PoseFile",
+            label="Pose file",
+            description="Input pose file json",
+            value="",
+            uid=[0]
+        ),
         desc.ChoiceParam(
             name='recordingSource',
             label='Recording source',

@@ -110,7 +110,7 @@ This node COLMAP mapper on database which contains matches.
             else:
                 colmap_container = UtilsContainers("singularity", dir_path + "/colmap.sif", out_dir)
             colmap = Colmap(colmap_container)
-            if chunk.ignoreTwoView.value:
+            if chunk.node.ignoreTwoView.value:
                 colmap.mapper("/data/database.db", "/data", "/data")
             else:
                 colmap.mapper("/data/database.db", "/data", "/data", ignore_two_view=False)
