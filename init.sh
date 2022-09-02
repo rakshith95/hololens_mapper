@@ -39,10 +39,6 @@ elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ] || [ "$(expr substr $
     echo "TODO: containarize pixel-perfect-sfm into Docker"
 fi
 
-# create common conda enviroment
-conda env create -f environment.yml
-conda activate meshroom
-
 # compile the C++ codes
 mkdir ./src/utils/srcRenderDepth/build
 cd ./src/utils/srcRenderDepth/build
