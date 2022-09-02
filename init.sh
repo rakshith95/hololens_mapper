@@ -18,14 +18,14 @@ if [ "$(uname) == Darwin" ] || [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; 
     echo "Colmap done"
     singularity build --fakeroot ./hloc.sif ./third_party/Hierarchical-Localization/Singularity.def
     echo "Hloc done"
-    singularity build --fakeroot ./patchmatchnet.sif ./third_party/PatchmatchNet/Singularity.def
-    echo "PatchMatch done"
-    singularity build --fakeroot ./ricp.sif ./third_party/Fast-Robust-ICP/Singularity.def
-    echo "RICP done"
+    # singularity build --fakeroot ./patchmatchnet.sif ./third_party/PatchmatchNet/Singularity.def
+    # echo "PatchMatch done"
+    # singularity build --fakeroot ./ricp.sif ./third_party/Fast-Robust-ICP/Singularity.def
+    # echo "RICP done"
     singularity build --fakeroot ./poselib.sif ./third_party/poselib/Singularity.def
     echo "Poselib done"
-    singularity build --fakeroot ./pixel-perfect-sfm.sif ./third_party/pixel-perfect-sfm/Singularity.def 
-    echo "pixel-perfect-sfm done"
+    # singularity build --fakeroot ./pixel-perfect-sfm.sif ./third_party/pixel-perfect-sfm/Singularity.def 
+    # echo "pixel-perfect-sfm done"
     #singularity build --fakeroot ./predator.sif ./third_party/OverlapPredator/Singularity.def
     #echo "Overlap Predator done"
 elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ] || [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
