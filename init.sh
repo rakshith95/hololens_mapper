@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # create common conda enviroment
-conda env create -f environment.yml
-conda activate meshroom
+#conda env create -f environment.yml
+#conda activate meshroom
 
 # download large files 
 mkdir ./third_party/Hierarchical-Localization/third_party/netvlad
